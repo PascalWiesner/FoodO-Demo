@@ -1,0 +1,12 @@
+# Xcode
+build/
+DerivedData/
+*.xcworkspace
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+.DS_Store
+Pods/
+**/GoogleService-Info.plist
+**/Info.plistFoodHarmony/App/GoogleService-Info.plist
+FoodHarmony/Info.plist
