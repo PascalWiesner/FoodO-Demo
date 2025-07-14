@@ -28,21 +28,32 @@ struct AddProductView: View {
                     .foregroundStyle(.white)
                 
                 if let imageUrl = viewModelAPI.product?.imageUrl, let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) { image in
-                        image.resizable()
-                            .scaledToFit()
-                            .frame(width: 300, height: 200)
-                            .cornerRadius(10)
-                    } placeholder: {
-                        ProgressView()
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(width: 300, height: 200)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 300, height: 200)
+                                .cornerRadius(10)
+                        case .failure:
+                            Image("LogoLogin")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 300, height: 200)
+                        @unknown default:
+                            EmptyView()
+                        }
                     }
-                }
-                else{
+                } else {
                     Image("LogoLogin")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 300, height: 200)
-                }
+                } 
                 DatePicker("Ablaufdatum", selection: $date, displayedComponents: .date)
                     .padding(.leading, 20)
                     .DatePickerModifier()

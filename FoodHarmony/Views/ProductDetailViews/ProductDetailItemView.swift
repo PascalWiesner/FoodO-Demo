@@ -10,8 +10,6 @@ import SwiftUI
 struct ProductDetailItemView: View {
     
     let item: ProductItem
-    @State private var isImageLoaded = false
-    
     
     var body: some View {
         VStack(spacing: 70){
@@ -21,25 +19,37 @@ struct ProductDetailItemView: View {
                     .font(.system(size: 30))
                     .foregroundStyle(.white)
                 
-                if isImageLoaded, let imageURL = URL(string: item.image3) {
-                    AsyncImage(url: imageURL) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 200, height: 200)
-                            .clipShape(Rectangle())
-                    } placeholder: {
-                        ProgressView()
+                if let imageURL = URL(string: item.image3) {
+                    AsyncImage(url: imageURL) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(width: 200, height: 200)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 200, height: 200)
+                                .clipShape(Rectangle())
+                        case .failure:
+                            Image(systemName: "photo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 200, height: 200)
+                                .foregroundColor(.gray)
+                        @unknown default:
+                            EmptyView()
+                        }
                     }
                 } else {
-                    ProgressView()
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                isImageLoaded = true
-                            }
-                        }
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 200, height: 200)
+                        .foregroundColor(.gray)
                 }
             }
+            
             VStack(spacing: 20){
                 Text("Umweltskala")
                     .font(.system(size: 30))
@@ -51,10 +61,17 @@ struct ProductDetailItemView: View {
         }
         .padding(.bottom, 40)
     }
-    
 }
-
 
 #Preview {
-    ProductDetailItemView(item: ProductItem(creatorID: "", name: "", image3: "", isComplete: false, expirationDate: Date(), storageLocationId: "", ecoScoreGrade: ""))
+    ProductDetailItemView(item: ProductItem(
+        creatorID: "",
+        name: "Beispielprodukt",
+        image3: "https://example.com/image.jpg",
+        isComplete: false,
+        expirationDate: Date(),
+        storageLocationId: "",
+        ecoScoreGrade: ""
+    ))
 }
+
